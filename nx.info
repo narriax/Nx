@@ -1,0 +1,7 @@
+name = NX
+description = NX core libraries
+
+core = 7.x
+package = NX
+
+files[] = nx.module
