@@ -1,0 +1,8 @@
+name = NX Worlds
+description = NX world framework
+
+core = 7.x
+package = NX
+dependencies[] = NX:nx
+
+files[] = nx_worlds.module

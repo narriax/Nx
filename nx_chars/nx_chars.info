@@ -1,0 +1,8 @@
+name = NX Chars
+description = NX character framework
+
+core = 7.x
+package = NX
+dependencies[] = NX:nx_worlds
+
+files[] = nx_chars.module
