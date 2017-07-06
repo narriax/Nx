@@ -38,16 +38,16 @@ CREATE TABLE IF NOT EXISTS `nx_worlds` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `universe_id` (`universe_id`,`owner_tag`,`access_level`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `nx_worlds`
 --
 
 INSERT INTO `nx_worlds` (`id`, `name`, `universe_id`, `owner_tag`, `access_level`, `date_created`, `date_modified`, `desc`) VALUES
-(0, 'Earth', 0, NULL, 5, '2017-06-30 19:50:24', '2017-06-30 19:50:24', ''),
-(1, 'Forgotten Realms', 1, NULL, 5, '2017-06-30 19:52:02', '2017-06-30 19:52:02', ''),
-(2, 'Azeroth', 2, NULL, 4, '2017-06-30 19:52:48', '2017-06-30 19:52:48', '');
+(1, 'Earth', 1, NULL, 5, '2017-06-30 19:50:24', '2017-06-30 19:50:24', ''),
+(2, 'Forgotten Realms', 2, NULL, 5, '2017-06-30 19:52:02', '2017-06-30 19:52:02', ''),
+(3, 'Azeroth', 3, NULL, 4, '2017-06-30 19:52:48', '2017-06-30 19:52:48', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

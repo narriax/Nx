@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `nx_chars` (
 --
 
 INSERT INTO `nx_chars` (`id`, `alias`, `world_id`, `owner_tag`, `access_level`, `date_created`, `date_modified`) VALUES
-(1, 'Arderian', 2, 'narriax', 4, '2017-06-30 20:01:44', '2017-06-30 20:01:44');
+(1, 'Arderian', 3, 'narriax', 4, '2017-06-30 20:01:44', '2017-06-30 20:01:44');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
