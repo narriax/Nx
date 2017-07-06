@@ -44,5 +44,7 @@ function nx_mod_initialize ($script_path) {
 	$hooks_dir = DRUPAL_ROOT.'/'.$mod_dir.'/hooks';
 	nx_mod_load_files ($hooks_dir);
 	
+	// include the module core library if present
+	module_load_include('inc', $module_name, $module_name.'_lib');
 }
 
