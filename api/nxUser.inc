@@ -28,4 +28,16 @@ class nxUser {
 		return $userlist;
 	}
 	
+	static function get_user_tags () {
+		$q = db_select ('nx_user_tags', 't');
+		$q -> fields ('t', array());
+		
+		$userlist = array();
+		if (!$rows = $q -> execute()) return $userlist;
+		foreach ($rows as $r) {
+			if (!array_key_exists($r->uid, $userlist)) $userlist[$r->uid] = array();
+			$userlist[$r->uid][] = $r->tag;
+		}
+		return $userlist;
+	}
 }
