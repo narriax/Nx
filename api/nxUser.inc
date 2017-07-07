@@ -26,7 +26,10 @@ class nxUser {
 		if ($q->execute()->rowCount() > 0) {
 			$q = db_update ('nx_user_tags', 't')
 				-> condition ('t.uid', $this->uid)
-				-> fields (array('t.tag' => $new_tag))
+				-> fields (array(
+					't.tag' => $new_tag,
+					't.date_modified' => date('Y-m-d G:i:s'),
+				))
 				-> execute();
 		} else {
 			$q = db_insert ('nx_user_tags')
@@ -35,7 +38,10 @@ class nxUser {
 		}
 	}
 		
-	
+		
+	// ===============================================================================
+	//  static user fetchers
+	// ===============================================================================
 	
 	static function get_user_by_id ($uid) {
 		if ($uid < 1) return null;
@@ -51,24 +57,44 @@ class nxUser {
 		return new nxUser($record);
 	}
 	
-	
+
 	static function get_users () {
-		$q = db_select ('nx_user_tags', 't');
-		$q -> leftJoin ('users', 'u', 'u.uid=t.uid');
+		$q = db_select ('users', 'u');
+		$q -> leftJoin ('nx_user_tags', 't', 'u.uid=t.uid');		
 		$q -> fields ('t', array('tag'))
 		   -> fields ('u', array());
 		   
 		$userlist = array();
 		if (!$rows = $q -> execute()) return $userlist;
 		foreach ($rows as $r) {
-			$userlist[$r->tag] = new nxUser($r);
+			if (!empty($r->tag)) $userlist[$r->tag] = new nxUser($r);
+			else $userlist['_uid_'.$r->uid] = new nxUser($r);
 		}
 		return $userlist;
 	}
 	
-	static function get_user_tags () {
+	
+	// ===============================================================================
+	// 	static bulk tags
+	// ===============================================================================
+	
+	static function get_tag_info ($tag_list = array ()) {
+		$q = db_select ('nx_user_tags', 't') -> fields ('t', array());
+		if (!empty($tag_list)) $q -> condition ('t.tag', $tag_list, 'IN') -> range (0, count($tag_list));
+		
+		$taglist = array ();
+		if (!$rows = $q -> execute()) return $taglist;
+		
+		foreach ($rows as $r) {
+			$taglist[$r->tag] = $r;
+		}
+		return $taglist;
+	}
+	
+	
+	static function get_user_tags ($list_as_array = true) {
 		$q = db_select ('nx_user_tags', 't');
-		$q -> fields ('t', array());
+		$q -> fields ('t', array('uid', 'tag'));
 		
 		$userlist = array();
 		if (!$rows = $q -> execute()) return $userlist;
@@ -76,6 +102,20 @@ class nxUser {
 			if (!array_key_exists($r->uid, $userlist)) $userlist[$r->uid] = array();
 			$userlist[$r->uid][] = $r->tag;
 		}
+		if (!$list_as_array) {
+			foreach ($userlist as $uid => $taglist) {
+				$userlist[$uid] = implode (', ', $userlist[$uid]);
+			}
+		}
 		return $userlist;
+	}
+	
+	
+	static function delete_tags ($list) {
+		if (empty($list)) return;
+		$q = db_delete('nx_user_tags')
+		   -> condition ('tag', $list, 'IN')
+		   -> execute();
+		
 	}
 }

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 30, 2017 at 10:00 PM
+-- Generation Time: Jul 07, 2017 at 07:21 PM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -29,6 +29,8 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `nx_user_tags` (
   `tag` varchar(16) NOT NULL,
   `uid` int(10) NOT NULL,
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`tag`),
   KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -37,8 +39,8 @@ CREATE TABLE IF NOT EXISTS `nx_user_tags` (
 -- Dumping data for table `nx_user_tags`
 --
 
-INSERT INTO `nx_user_tags` (`tag`, `uid`) VALUES
-('narriax', 1);
+INSERT INTO `nx_user_tags` (`tag`, `uid`, `date_created`, `date_modified`) VALUES
+('narriax', 1, '2017-07-07 13:21:17', '2017-07-07 13:21:36');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

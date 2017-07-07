@@ -215,22 +215,30 @@ function nx_form_alter__people_table (&$form, &$form_state) {
 	if (!array_key_exists('accounts',$form)) return;
 	
 	module_load_include ('inc', 'nx', 'api/nxUser');
-	$usrtags = nxUser::get_user_tags();
+	$users = nxUser::get_users();
+	$usrtags = nxUser::get_user_tags(false);
+	
+	//dpm($users);
 	
 	$new_headers = array (
 		'tags' => array('data' => 'Tags'),	
+		'fullname' => array ('data' => 'Name'),
 	);
 	$form['accounts']['#header'] = array_merge (
+		array ('uid' => array ('data' => '#')),
 		array_slice($form['accounts']['#header'],0,1),
 		$new_headers,
 		array_slice($form['accounts']['#header'],1));
 	
 	
 	foreach ($form['accounts']['#options'] as $uid => $udata) {
+		$form['accounts']['#options'][$uid]['uid'] = $uid;
+		$form['accounts']['#options'][$uid]['fullname'] = 'TODO';
 		if (array_key_exists($uid, $usrtags)) {
-			$form['accounts']['#options'][$uid]['tags'] = '<b>'.implode(', ', $usrtags[$uid]).'</b>';
+			$form['accounts']['#options'][$uid]['tags'] = '<b>'.$usrtags[$uid].'</b>';
 		} else $form['accounts']['#options'][$uid]['tags'] = '';
 	}
+	
 	return $form;
 }
 
