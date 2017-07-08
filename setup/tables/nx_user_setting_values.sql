@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 29, 2017 at 01:53 AM
+-- Generation Time: Jul 08, 2017 at 02:43 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `bigbrother`
+-- Database: `colony`
 --
 
 -- --------------------------------------------------------
@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS `nx_user_setting_values` (
   `uid` int(10) unsigned NOT NULL,
   `sid` int(10) NOT NULL,
   `value` varchar(255) CHARACTER SET latin1 NOT NULL,
+  `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`uid`,`sid`),
   KEY `sid_cascade` (`sid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -42,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `nx_user_setting_values` (
 -- Constraints for table `nx_user_setting_values`
 --
 ALTER TABLE `nx_user_setting_values`
-  ADD CONSTRAINT `uid_cascade` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `sid_cascade` FOREIGN KEY (`sid`) REFERENCES `nx_user_settings` (`sid`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `sid_cascade` FOREIGN KEY (`sid`) REFERENCES `nx_user_settings` (`sid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `uid_cascade` FOREIGN KEY (`uid`) REFERENCES `users` (`uid`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

@@ -4,15 +4,78 @@ class nxUser {
 	public $tag = "";
 	public $uid = -1;
 	public $username = "";
+	public $namef = "";
+	public $namel = "";
 	
 	public function nxUser ($record = null) {	
 		if ($record) {
-			if (isset($record->tag)) $this->tag = $record->tag;
-			if (isset($record->uid)) $this->uid = $record->uid;
-			if (isset($record->name)) $this->username = $record->name;
+			foreach ($record as $field => $value) {
+				if ($field == 'name') $field = 'username';
+				$this->$field = $value;
+			}
 		}
 	}
 	
+	public function get_fullname () {
+		return trim($this->namef.' '.$this->namel);
+	}
+	
+	
+	function update_setting ($setting, $value) {
+		if ($this->uid < 1) return;
+		
+		// find this setting
+		$q = db_select ('nx_user_settings', 'us')
+		   -> fields ('us', array())
+		   -> condition ('us.name', $setting)
+		   -> range (0, 1);
+		if (!$s = $q->execute()->fetch()) {
+			dvm ('unknown setting ['.$setting.']');
+			return;
+		} elseif (!isset($s->sid)|| $s->sid < 1) {
+			dvm ('unknown setting ['.$setting.']');
+			return;			
+		}
+		
+		// now find existing value (if any)
+		$q = db_select ('nx_user_setting_values', 'usv');
+		$q -> fields ('usv', array('value'))
+		   -> range (0,1);				
+		
+		$and = db_and();
+		$and -> condition ('usv.uid', $this->uid);
+		$and -> condition ('usv.sid', $s->sid);
+		$q -> condition ($and);
+		
+		
+		if ($r = $q->execute()->fetch()) {
+			if ($r->value != $value) {
+				$and = db_and();
+				$and -> condition ('uid', $this->uid);
+				$and -> condition ('sid', $s->sid);				
+				
+				$q = db_update ('nx_user_setting_values')
+					-> condition ($andd)
+					-> fields (array(
+						'value' => $value,
+						'date_modified' => date('Y-m-d G:i:s'),
+					))
+					-> execute();				
+			}
+		} else {
+			$q = db_insert ('nx_user_setting_values')
+				-> fields (array ('uid' => $this->uid, 'sid' => $s->sid, 'value' => $value))
+				->execute();			
+		}
+		
+	}
+	
+	function update_name ($namef, $namel) {
+		$this->namef = $namef;
+		$this->namel = $namel;
+		$this->update_setting('namef', $namef);
+		$this->update_setting('namel', $namel);
+	}
 	
 	function update_tag ($new_tag) {		
 		$this->tag = $new_tag;
@@ -58,11 +121,22 @@ class nxUser {
 	}
 	
 
-	static function get_users () {
+	static function get_users ($fetch_settings = array ('namef', 'namel')) {
 		$q = db_select ('users', 'u');
-		$q -> leftJoin ('nx_user_tags', 't', 'u.uid=t.uid');		
+		$q -> leftJoin ('nx_user_tags', 't', 'u.uid=t.uid');
 		$q -> fields ('t', array('tag'))
 		   -> fields ('u', array());
+		   
+		if (!empty($fetch_settings)) {
+			$q -> leftJoin ('nx_user_setting_values', 'usv', 'u.uid=usv.uid');
+			$q -> leftJoin ('nx_user_settings', 'us', 'us.sid=usv.sid');
+			$q -> addField ('usv', 'value', 'namef');			// FIXME: names overwrite each other, cuz both are "value"
+			
+			$or = db_or ();
+			$or -> condition ('us.name', $fetch_settings, 'IN');
+			$or -> isNull ('us.name');
+			$q -> condition ($or);
+		}
 		   
 		$userlist = array();
 		if (!$rows = $q -> execute()) return $userlist;

@@ -32,7 +32,10 @@ function nx_form_alter (&$form, &$form_state) {
 function nx_form_alter__profile (&$form, &$form_state) {
 	if (!array_key_exists('account',$form)) return;
 	
-	nx_form_alter__profile_fields ($form, $form_state);
+	module_load_include('inc', 'nx', 'api/nxUser');
+	if ($form['#user']->uid > 0) $existing_record = nxUser::get_user_by_id($form['#user']->uid);
+	else $existing_record = null;
+	nx_form_alter__profile_fields ($form, $form_state, $existing_record);
 }
 
 // ======================================================================
@@ -125,16 +128,23 @@ function nx_generate_tag ($fname, $lname) {
 /*
  *
  */
-function nx_form_alter__profile_fields (&$form, &$form_state) {
+function nx_form_alter__profile_fields (&$form, &$form_state, $existing_record = null) {
 	if (!array_key_exists('account',$form)) return;
 	
-	
 	// fetch ajax values
-	$tag = '';
+	$fname = $lname = $tag = '';
 	$require_fields = true;
 	if (array_key_exists('values', $form_state)) {
 		if (array_key_exists('override_required', $form_state['values']) && $form_state['values']['override_required'] === 1) $require_fields = false;		
 		if (!empty($form_state['values']['tag'])) $tag = $form_state['values']['tag'];
+	} else {
+		// fetch existing values
+		if (isset($existing_record)) {
+			$tag = $existing_record->tag;
+			$lname = $existing_record->namel;
+			$fname = $existing_record->namef;
+		}
+		
 	}
 	
 	
@@ -171,7 +181,7 @@ function nx_form_alter__profile_fields (&$form, &$form_state) {
 		'#description' => $form['account']['name']['#description'],
 		'#required' => $require_fields,
 		'#attributes' => array('class' => array ('name', 'firstname')),
-		'#default_value' => '',
+		'#default_value' => $fname,
 		'#access' => TRUE,
 		'#ajax' => array(
 		  'callback' => 'nx_form_alter__profile_fields_ajax_name',
@@ -187,7 +197,7 @@ function nx_form_alter__profile_fields (&$form, &$form_state) {
 		'#description' => $form['account']['name']['#description'],
 		'#required' => $require_fields,
 		'#attributes' => array('class' => array ('name', 'lastname')),
-		'#default_value' => '',
+		'#default_value' => $lname,
 		'#access' => TRUE,
 		'#ajax' => array(
 		  'callback' => 'nx_form_alter__profile_fields_ajax_name',
@@ -286,6 +296,7 @@ function nx_form_alter__profile_fields_submit ($form, $form_state) {
 	$u = nxUser::get_user_by_id($uid);
 	if ($u == null) return;
 	
+	$u->update_name ($form_state['values']['firstname'], $form_state['values']['lastname']);
 	$u->update_tag($form_state['values']['tag']);
 }
 
@@ -298,7 +309,7 @@ function nx_form_alter__people_table (&$form, &$form_state) {
 	$users = nxUser::get_users();
 	$usrtags = nxUser::get_user_tags(false);
 	
-	//dpm($users);
+	dpm($users);
 	
 	$new_headers = array (
 		'tags' => array('data' => 'Tags'),	
@@ -313,10 +324,12 @@ function nx_form_alter__people_table (&$form, &$form_state) {
 	
 	foreach ($form['accounts']['#options'] as $uid => $udata) {
 		$form['accounts']['#options'][$uid]['uid'] = $uid;
-		$form['accounts']['#options'][$uid]['fullname'] = 'TODO';
 		if (array_key_exists($uid, $usrtags)) {
 			$form['accounts']['#options'][$uid]['tags'] = '<b>'.$usrtags[$uid].'</b>';
 		} else $form['accounts']['#options'][$uid]['tags'] = '';
+		
+		$cur_user = $users[$usrtags[$uid]];
+		$form['accounts']['#options'][$uid]['fullname'] = $cur_user->get_fullname();		
 	}
 	
 	return $form;
