@@ -14,7 +14,7 @@ class nxUser {
 	}
 	
 	
-	function update_tag ($new_tag) {
+	function update_tag ($new_tag) {		
 		$this->tag = $new_tag;
 		if ($this->uid < 1) return;
 		
@@ -24,11 +24,11 @@ class nxUser {
 			-> range (0,1);
 			
 		if ($q->execute()->rowCount() > 0) {
-			$q = db_update ('nx_user_tags', 't')
-				-> condition ('t.uid', $this->uid)
+			$q = db_update ('nx_user_tags')
+				-> condition ('uid', $this->uid)
 				-> fields (array(
-					't.tag' => $new_tag,
-					't.date_modified' => date('Y-m-d G:i:s'),
+					'tag' => $new_tag,
+					'date_modified' => date('Y-m-d G:i:s'),
 				))
 				-> execute();
 		} else {
