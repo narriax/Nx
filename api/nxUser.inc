@@ -106,15 +106,26 @@ class nxUser {
 	//  static user fetchers
 	// ===============================================================================
 	
-	static function get_user_by_id ($uid) {
+	static function get_user_by_id ($uid, $fetch_settings = array ('namef', 'namel')) {
 		if ($uid < 1) return null;
-		$q = db_select ('users', 'u');
-		$q -> leftJoin ('nx_user_tags', 't', 'u.uid=t.uid');
-		$q -> condition ('u.uid', $uid)
-		   -> fields ('t', array('tag'))
-		   -> fields ('u', array())
-		   -> range (0,1);
-		if (!$record = $q -> execute() -> fetch()) {
+		
+		// write query as raw sql, because drupal db framework does not support row->column transposition we do for $fetch_settings
+		$q_fields = 'u.*, t.tag AS tag';
+		$q_tables = '{users} u LEFT OUTER JOIN {nx_user_tags} t ON t.uid=u.uid ';
+		$q_conditions = 'u.uid='.$uid;
+		$q_tail = '';
+		
+		if (!empty($fetch_settings)) {
+			foreach ($fetch_settings as $s) {
+				$q_fields .= ", MAX((CASE when us.name = '".$s."' THEN usv.value END)) AS '".$s."'";
+			}
+			$q_tables .= 'LEFT OUTER JOIN {nx_user_setting_values} usv ON usv.uid=u.uid ' ;
+			$q_tables .= 'LEFT OUTER JOIN {nx_user_settings} us ON us.sid=usv.sid ' ;
+			$q_tail .= ' GROUP BY u.uid';
+		}
+		
+		$q = db_query('SELECT '.$q_fields.' FROM '.$q_tables.' WHERE '.$q_conditions.' '.$q_tail.' LIMIT 1');
+		if (!$record = $q -> fetch()) {
 			return null;
 		}
 		return new nxUser($record);
@@ -122,24 +133,25 @@ class nxUser {
 	
 
 	static function get_users ($fetch_settings = array ('namef', 'namel')) {
-		$q = db_select ('users', 'u');
-		$q -> leftJoin ('nx_user_tags', 't', 'u.uid=t.uid');
-		$q -> fields ('t', array('tag'))
-		   -> fields ('u', array());
-		   
+	
+		// write query as raw sql, because drupal db framework does not support row->column transposition we do for $fetch_settings
+		$q_fields = 'u.*, t.tag AS tag';
+		$q_tables = '{users} u LEFT OUTER JOIN {nx_user_tags} t ON t.uid=u.uid ';
+		$q_tail = '';
+		
 		if (!empty($fetch_settings)) {
-			$q -> leftJoin ('nx_user_setting_values', 'usv', 'u.uid=usv.uid');
-			$q -> leftJoin ('nx_user_settings', 'us', 'us.sid=usv.sid');
-			$q -> addField ('usv', 'value', 'namef');			// FIXME: names overwrite each other, cuz both are "value"
-			
-			$or = db_or ();
-			$or -> condition ('us.name', $fetch_settings, 'IN');
-			$or -> isNull ('us.name');
-			$q -> condition ($or);
+			foreach ($fetch_settings as $s) {
+				$q_fields .= ", MAX((CASE when us.name = '".$s."' THEN usv.value END)) AS '".$s."'";
+			}
+			$q_tables .= 'LEFT OUTER JOIN {nx_user_setting_values} usv ON usv.uid=u.uid ' ;
+			$q_tables .= 'LEFT OUTER JOIN {nx_user_settings} us ON us.sid=usv.sid ' ;
+			$q_tail .= ' GROUP BY u.uid';
 		}
+		
+		$q = db_query('SELECT '.$q_fields.' FROM '.$q_tables.$q_tail);	   
 		   
 		$userlist = array();
-		if (!$rows = $q -> execute()) return $userlist;
+		if (!$rows = $q -> fetchAll()) return $userlist;
 		foreach ($rows as $r) {
 			if (!empty($r->tag)) $userlist[$r->tag] = new nxUser($r);
 			else $userlist['_uid_'.$r->uid] = new nxUser($r);

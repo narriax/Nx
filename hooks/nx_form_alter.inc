@@ -309,7 +309,7 @@ function nx_form_alter__people_table (&$form, &$form_state) {
 	$users = nxUser::get_users();
 	$usrtags = nxUser::get_user_tags(false);
 	
-	dpm($users);
+	//dpm($users);
 	
 	$new_headers = array (
 		'tags' => array('data' => 'Tags'),	
@@ -328,8 +328,11 @@ function nx_form_alter__people_table (&$form, &$form_state) {
 			$form['accounts']['#options'][$uid]['tags'] = '<b>'.$usrtags[$uid].'</b>';
 		} else $form['accounts']['#options'][$uid]['tags'] = '';
 		
-		$cur_user = $users[$usrtags[$uid]];
-		$form['accounts']['#options'][$uid]['fullname'] = $cur_user->get_fullname();		
+		if (!$cur_user = $users[$usrtags[$uid]]) {
+			$form['accounts']['#options'][$uid]['fullname'] = '';
+		} else {
+			$form['accounts']['#options'][$uid]['fullname'] = $cur_user->get_fullname();	
+		}
 	}
 	
 	return $form;
