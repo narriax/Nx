@@ -27,6 +27,10 @@ class nxWorld {
 		}
 	}	
 	
+	public function delete () {
+		dvm ('TODO: delete world '.$this->id);
+	}
+	
 	// =================================================================
 	static function get_world_by_id ($world_id) {
 		if ($world_id < 0) return null;
@@ -62,6 +66,15 @@ class nxWorld {
 		return $list;
 	}
 	
+	static function get_universes () {
+		$q = db_select ('nx_worlds_universes', 'wu')
+			-> fields ('wu', array('id', 'name'))
+			-> orderBy ('wu.name');
+		if (!$rows = $q -> execute()) return array();
+		return $rows -> fetchAllKeyed(0,1);
+	}
+	
+
 	
 	
 }

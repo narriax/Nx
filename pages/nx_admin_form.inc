@@ -1,12 +1,18 @@
 <?php
 
+
 function nx_admin_form ($form, &$form_state) {
 	
 	drupal_add_library('system', 'drupal.collapse');
 	
-	$form = array();
+	// get action parameters
+	$action = nx_get_action();
+
 	
-	//======================================
+	$form = array();
+		
+	//======================================		USER TAGS
+	/*
 	module_load_include ('inc', 'nx', 'api/nxUser');
 	$userlist = nxUser::get_users();
 	$form['panel_users'] = array (
@@ -26,10 +32,20 @@ function nx_admin_form ($form, &$form_state) {
 	$form['panel_users']['user_list'] = array (
 		'#markup' => $table,
 	);
+	*/
 	
-	
-	//======================================
+	//======================================		WORLDS
 	module_load_include ('inc', 'nx', 'api/nxWorld');
+	
+	// delete doomed worlds
+	if ($action && $action->action == 'delete' && $action->domain == 'world') {
+		if ($doomed = nxWorld::get_world_by_id($action->arg)) {
+			$doomed->delete();
+		}
+	}	
+	
+	// get all existing worlds
+	$universes = nxWorld::get_universes();	
 	$worldlist = nxWorld::get_worlds();
 	$form['panel_worlds'] = array (
 		'#type' => 'fieldset',
@@ -37,20 +53,80 @@ function nx_admin_form ($form, &$form_state) {
 		'#collapsible' => TRUE,
 		'#collapsed' => FALSE,
 	);
-	$table = '<table><tr><th>UNIVERSE</th><th>WORLD</th><th>OWNER</th></tr>';
-	foreach ($worldlist as $wid => $w) {
-		$table .= '<tr>';
-		$table .= '<td><b>'.$w->universe->name.'</b></td>';
-		$table .= '<td>'.$w->name.'</td>';
-		if (!isset($w->owner_tag)) $table .= '<td>-</td>';
-		else $table .= '<td>'.$w->owner_tag.'</td>';
-		$table .= '</tr>';
-	}
-	$table .= '</table>';
-	$form['panel_worlds']['user_list'] = array (
-		'#markup' => $table,
-	);	
 	
+	// list all existing worlds to a table
+	$temp_edit_arg = -1;
+	if ($action && $action->action == 'edit' && $action->domain == 'world') $temp_edit_arg = $action->arg;
+	$world_options = array ();
+	foreach ($worldlist as $wid => $w) {
+		if ($temp_edit_arg == $wid) {			
+			$world_options[$wid] = nx_admin_form_world_input_line ($universes, $wid, $w->name, $w->owner_tag, $w->universe->name);	
+		} else {
+			$world_options[$wid] = array (
+				'universe' => $w->universe->name,
+				'name' => $w->name,
+				'owner' => $w->owner_tag,
+				'actions' => nx_action_link('edit', 'world', $wid).' &nbsp; '.nx_action_link('delete', 'world', $wid),
+			);
+		}
+	}
+	// add ui to to create new world
+	if ($action && $action->action == 'addnew' && $action->domain == 'world') {
+		module_load_include ('inc', 'nx', 'api/nxUser');
+		if ($me = nxUser::get_current_user()) {		
+			$world_options['new'] = nx_admin_form_world_input_line ($universes, 'new', '', $me->tag);
+		}
+	}
+	
+	//publish table to the form
+	$form['panel_worlds']['worlds'] = array (
+		'#type' => 'tableselect',
+		'#header' => array ('universe' => 'Universe', 'name' => 'World', 'owner' => 'Owner (tag)', 'actions' => ''),
+		'#options' => $world_options,
+		'#suffix' => nx_action_link('add new', 'world'),
+	);	
 	
 	return $form;
 }
+
+function nx_admin_form_world_input_line ($universes, $wid, $wname, $wtag, $wuniversename = '') {
+	$uni_list = '<select class="form-select" name="world_universe">';
+	$universes = array_merge(array(-1 => ''), $universes);
+	foreach ($universes as $wuid=>$wuname) {
+		$uni_list .= '<option value="'.$wuid.'" '.($wuname == $wuniversename?'selected':'').'>'.$wuname.'</option>';
+	}
+	$uni_list .= '</select>';
+		
+	return array (
+		'universe' => '<input type="hidden" name="world_id" value="'.$wid.'">'.$uni_list,
+		'name' => '<input class="form-text" name="world_name" value="'.$wname.'">', 
+		'owner' => $wtag,
+		'actions' => '<input class="form-submit" type="submit" value="Save" style="margin-bottom: 0px;">',
+	);	
+}
+
+
+function nx_admin_form_validate ($form, &$form_state) {
+	if (isset($_POST['world_id'])) {
+		$universe = $_POST['world_universe'];
+		$name = $_POST['world_name'];
+		
+		$process = true;
+		if ($universe < 1) {
+			form_set_error('universe', 'Must select a universe.');
+			$process = false;
+		}
+		if (empty(trim($name))) {
+			form_set_error('world', 'World name cannot be empty.');
+			$process = false;
+		}
+		if ($process) {
+			form_set_error('yargl', 'TODO: do stuff');			
+		}
+	}
+}
+
+function nx_admin_form_submit ($form, &$form_state) {
+
+}
+

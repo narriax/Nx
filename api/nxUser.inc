@@ -7,6 +7,7 @@ class nxUser {
 	public $namef = "";
 	public $namel = "";
 	
+	
 	public function nxUser ($record = null) {	
 		if ($record) {
 			foreach ($record as $field => $value) {
@@ -106,6 +107,15 @@ class nxUser {
 	//  static user fetchers
 	// ===============================================================================
 	
+	static function get_current_user () {
+		global $user, $cur_user;
+		if (!isset($cur_user)) {
+			if ($user->uid < 1) return null;
+			$cur_user = nxUser::get_user_by_id($user->uid);
+		}
+		return $cur_user;
+	}
+	
 	static function get_user_by_id ($uid, $fetch_settings = array ('namef', 'namel')) {
 		if ($uid < 1) return null;
 		
@@ -117,7 +127,7 @@ class nxUser {
 		
 		if (!empty($fetch_settings)) {
 			foreach ($fetch_settings as $s) {
-				$q_fields .= ", MAX((CASE when us.name = '".$s."' THEN usv.value END)) AS '".$s."'";
+				$q_fields .= ", MAX(CASE when us.name = '".$s."' THEN usv.value END) AS '".$s."'";
 			}
 			$q_tables .= 'LEFT OUTER JOIN {nx_user_setting_values} usv ON usv.uid=u.uid ' ;
 			$q_tables .= 'LEFT OUTER JOIN {nx_user_settings} us ON us.sid=usv.sid ' ;
@@ -141,7 +151,7 @@ class nxUser {
 		
 		if (!empty($fetch_settings)) {
 			foreach ($fetch_settings as $s) {
-				$q_fields .= ", MAX((CASE when us.name = '".$s."' THEN usv.value END)) AS '".$s."'";
+				$q_fields .= ", MAX(CASE when us.name = '".$s."' THEN usv.value END) AS '".$s."'";
 			}
 			$q_tables .= 'LEFT OUTER JOIN {nx_user_setting_values} usv ON usv.uid=u.uid ' ;
 			$q_tables .= 'LEFT OUTER JOIN {nx_user_settings} us ON us.sid=usv.sid ' ;
