@@ -9,7 +9,54 @@ function nx_admin_form ($form, &$form_state) {
 	$action = nx_get_action();
 
 	
+	
+	/*
+	module_load_include('inc', 'nx', 'api/nxTreeTable');
+	$tree = new nxTreeTable();
+	
+	$tree->AddCategory('universe');
+	$tree->SetCategoryHeaders('universe', array('_' => 'Universe', 'owner_tag' => 'Owner (Tag)', 'access' => 'Access'));
+	$tree->SetCategoryActions('universe', array('toggle', 'edit', 'delete'));
+	$tree->SetCategoryDB('universe', 'nx_worlds_universes');
+	
+	$tree->AddCategory('world', 'universe');
+	$tree->SetCategoryHeaders('world', array('_' => 'World', 'owner_tag' => 'Owner (Tag)', 'access' => 'Access'));
+	$tree->SetCategoryActions('world', array('toggle', 'edit', 'delete'));
+	$tree->SetCategoryDB('world', 'nx_worlds', 'universe_id');
+	
+	$tree->FetchItems();
+	dpm($tree);
+	*/
+	
 	$form = array();
+		
+	//======================================		MOD UPDATES
+	
+	module_load_include('inc', 'nx', 'nx_lib_setup');
+	
+	if ($action && $action->action == 'update' && $action->domain == 'mod') {
+		$mod_arg = $action->arg;
+		nx_mod_setup__smart_update($mod_arg);
+	}
+	
+	$mods = nx_get_mods(true);
+	foreach ($mods as $m => $data) {
+		$outdated = $mods[$m]['curversion'] < $mods[$m]['lastdate'];
+		
+		$mods[$m]['lastdate'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [h:i:s]', $mods[$m]['lastdate'])));	
+		if ($mods[$m]['curversion'] == 0) $mods[$m]['curversion'] = '<i>- not installed -</i>';
+		else $mods[$m]['curversion'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [h:i:s]', $mods[$m]['curversion'])));
+		if ($outdated) {
+			$mods[$m]['curversion'] = '<font color=maroon>'.$mods[$m]['curversion'].'</font>';
+			$mods[$m]['actions'] = nx_action_link('update', 'mod', $m);
+		} else $mods[$m]['actions'] = '';
+	}
+	$form ['mods'] = array(
+		'#type' => 'tableselect',
+		'#title' => 'Enabled NX Modules',
+		'#header' => array ('mod' => 'Mods', 'curversion' => 'Your version', 'lastdate' => 'File last modified', 'actions' => 'Actions'),
+		'#options' => $mods,
+	);		
 		
 	//======================================		USER TAGS
 	/*
