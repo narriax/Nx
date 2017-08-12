@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 30, 2017 at 10:01 PM
+-- Generation Time: Aug 12, 2017 at 12:34 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `nx_chars` (
   `alias` varchar(16) NOT NULL,
   `world_id` int(4) NOT NULL,
   `owner_tag` varchar(16) DEFAULT NULL,
-  `access_level` int(1) NOT NULL DEFAULT '0',
+  `accessid` varchar(16) NOT NULL DEFAULT '',
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS `nx_chars` (
 -- Dumping data for table `nx_chars`
 --
 
-INSERT INTO `nx_chars` (`id`, `alias`, `world_id`, `owner_tag`, `access_level`, `date_created`, `date_modified`) VALUES
-(1, 'Arderian', 3, 'narriax', 4, '2017-06-30 20:01:44', '2017-06-30 20:01:44');
+INSERT INTO `nx_chars` (`id`, `alias`, `world_id`, `owner_tag`, `accessid`, `date_created`, `date_modified`) VALUES
+(1, 'Arderian', 3, 'narriax', '', '2017-06-30 20:01:44', '2017-06-30 20:01:44');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

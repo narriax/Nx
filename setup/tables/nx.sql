@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 12, 2017 at 12:34 AM
+-- Generation Time: Aug 12, 2017 at 02:04 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -23,25 +23,17 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `nx_access_levels`
+-- Table structure for table `nx`
 --
 
-CREATE TABLE IF NOT EXISTS `nx_access_levels` (
-  `id` int(2) NOT NULL,
-  `name` varchar(16) NOT NULL,
-  `desc` varchar(128) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS `nx` (
+  `module` varchar(16) NOT NULL,
+  `table_name` varchar(32) NOT NULL,
+  `cols` text NOT NULL,
+  `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`table_name`),
+  KEY `mod` (`module`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `nx_access_levels`
---
-
-INSERT INTO `nx_access_levels` (`id`, `name`, `desc`) VALUES
-(0, 'private', 'Just you'),
-(1, 'friends', 'Your friends'),
-(2, 'domain', 'Everyone registered on the same domain'),
-(3, 'public', 'Everyone');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

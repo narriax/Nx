@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 30, 2017 at 09:57 PM
+-- Generation Time: Aug 12, 2017 at 12:35 AM
 -- Server version: 5.6.17
 -- PHP Version: 5.5.12
 
@@ -31,23 +31,23 @@ CREATE TABLE IF NOT EXISTS `nx_worlds` (
   `name` varchar(32) NOT NULL,
   `universe_id` int(4) NOT NULL,
   `owner_tag` varchar(16) DEFAULT NULL,
-  `access_level` int(2) NOT NULL DEFAULT '0',
+  `accessid` varchar(16) NOT NULL DEFAULT '',
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `desc` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
-  KEY `universe_id` (`universe_id`,`owner_tag`,`access_level`)
+  KEY `universe_id` (`universe_id`,`owner_tag`,`accessid`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Dumping data for table `nx_worlds`
 --
 
-INSERT INTO `nx_worlds` (`id`, `name`, `universe_id`, `owner_tag`, `access_level`, `date_created`, `date_modified`, `desc`) VALUES
-(1, 'Earth', 1, NULL, 5, '2017-06-30 19:50:24', '2017-06-30 19:50:24', ''),
-(2, 'Forgotten Realms', 2, NULL, 5, '2017-06-30 19:52:02', '2017-06-30 19:52:02', ''),
-(3, 'Azeroth', 3, NULL, 4, '2017-06-30 19:52:48', '2017-06-30 19:52:48', '');
+INSERT INTO `nx_worlds` (`id`, `name`, `universe_id`, `owner_tag`, `accessid`, `date_created`, `date_modified`, `desc`) VALUES
+(1, 'Earth', 1, NULL, '', '2017-06-30 19:50:24', '2017-06-30 19:50:24', ''),
+(2, 'Forgotten Realms', 2, NULL, '', '2017-06-30 19:52:02', '2017-06-30 19:52:02', ''),
+(3, 'Azeroth', 3, NULL, '', '2017-06-30 19:52:48', '2017-06-30 19:52:48', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

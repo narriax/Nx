@@ -47,3 +47,29 @@ function nx_get_action () {
 	
 	return $action;
 }
+
+
+function nx_get_access_levels () {
+	if (!$access_levels = nx_var('access_levels')) {
+		$q = db_select('nx_access_levels', 'al') -> fields('al', array());
+		$access_levels = $q->execute()->fetchAllKeyed(0,1);
+		nx_var_set('access_levels', $access_levels);
+	}
+	return $access_levels;
+}
+
+
+function nx_db_limit_access (&$q, $tablealias) {
+	$access_levels = nx_get_access_levels();
+	//dpm($access_levels);
+	
+	module_load_include('inc', 'nx', 'api/nxUser');
+	$usr = nxUser::get_current_user();
+	//dpm($usr);
+	
+	dvm('TODO: nx_db_limit_access');
+	
+	return $q;
+}
+
+

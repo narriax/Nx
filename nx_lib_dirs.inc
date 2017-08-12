@@ -27,6 +27,13 @@ function nx_mod_load_files ($dir, $conditions = array(), $file_ext = '.inc') {
 }
 
 
+function nx_module_setup_folder ($module_name, $mod_dir = '') {
+	if (empty($mod_dir)) $mod_dir = drupal_get_path('module', $module_name);
+	$setup_dir = DRUPAL_ROOT.'/'.$mod_dir.'/setup';
+	return $setup_dir;
+}
+
+
 // initialize the module based on the .module file path
 function nx_mod_initialize ($script_path) {
 	// identify this module
@@ -34,7 +41,8 @@ function nx_mod_initialize ($script_path) {
 	$mod_dir = drupal_get_path('module', $module_name);
 	
 	// check setup
-	$setup_dir = DRUPAL_ROOT.'/'.$mod_dir.'/setup';
+	$setup_dir = nx_module_setup_folder($module_name, $mod_dir);
+	
 	if (file_exists($setup_dir) && variable_get ($module_name.'_setup') != 1) {
 		module_load_include('inc', 'nx', 'nx_lib_setup');
 		nx_mod_setup ($module_name, $setup_dir);
