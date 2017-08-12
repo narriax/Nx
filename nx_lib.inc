@@ -18,11 +18,14 @@ function nx_var_set ($name = "", $value = false) {
 }
 
 
-function nx_action_link ($action, $domain='', $arg='', $warn=false) {
+function nx_action_link ($action, $domain='', $arg='', $warn=false, $url = '') {
 	$l = str_replace('_', '', str_replace(' ','',$action));
 	if (!empty($domain)) $l .= '_'.$domain;
 	if (!empty($arg)) $l .= ':'.$arg;
-	return '<a class="actionlink '.($warn?'warn':'').'" href="?action='.$l.'">'.$action.'</a>';
+	
+	if (!empty($url)) $url = url($url);
+	
+	return '<a class="actionlink '.($warn?'warn':'').'" href="'.$url.'?action='.$l.'">'.$action.'</a>';
 }
 
 

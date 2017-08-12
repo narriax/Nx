@@ -31,6 +31,21 @@ function nx_menu () {
     'file path' => drupal_get_path('module', 'nx').'/pages',	
   ); 	
   
+  // add a page for module tables udpates
+  $items['admin/config/nx/core/update'] = array(
+    'title' => 'NX updates',
+    'description' => 'Configure NX core framework',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array ('nx_update_form'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+    'weight' => -1,
+	
+    'file' => 'nx_update_form.inc',
+    'file path' => drupal_get_path('module', 'nx').'/pages',	
+  ); 	
+  
+  
   // add a tab to the people admin list for nx tags
   $items['admin/people/tags'] = array(
     'title' => 'NX Tags',
@@ -42,6 +57,8 @@ function nx_menu () {
     'access arguments' => array('administer site configuration'),
     'type' => MENU_LOCAL_TASK,
   );  
+	
+	
 	
   return $items;
 }

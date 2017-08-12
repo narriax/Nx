@@ -34,21 +34,23 @@ function nx_admin_form ($form, &$form_state) {
 	
 	module_load_include('inc', 'nx', 'nx_lib_setup');
 	
-	if ($action && $action->action == 'update' && $action->domain == 'mod') {
-		$mod_arg = $action->arg;
-		nx_mod_setup__smart_update($mod_arg);
-	}
-	
 	$mods = nx_get_mods(true);
 	foreach ($mods as $m => $data) {
-		$outdated = $mods[$m]['curversion'] < $mods[$m]['lastdate'];
+		$outdated = ($mods[$m]['lastdate']>-1 && $mods[$m]['curversion'] < $mods[$m]['lastdate']);
 		
-		$mods[$m]['lastdate'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [h:i:s]', $mods[$m]['lastdate'])));	
-		if ($mods[$m]['curversion'] == 0) $mods[$m]['curversion'] = '<i>- not installed -</i>';
-		else $mods[$m]['curversion'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [h:i:s]', $mods[$m]['curversion'])));
+		if ($mods[$m]['lastdate'] > -1) {
+			$mods[$m]['lastdate'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [H:i:s]', $mods[$m]['lastdate'])));	
+			if ($mods[$m]['curversion'] == 0) $mods[$m]['curversion'] = '<i>- not installed -</i>';
+			else $mods[$m]['curversion'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [H:i:s]', $mods[$m]['curversion'])));
+		} else {
+			$mods[$m]['lastdate'] = '<font color=silver><i>- no files -</i></font>';
+			$mods[$m]['curversion'] = '<font color=silver><i>- no files -</i></font>';
+		}
+		
+		
 		if ($outdated) {
 			$mods[$m]['curversion'] = '<font color=maroon>'.$mods[$m]['curversion'].'</font>';
-			$mods[$m]['actions'] = nx_action_link('update', 'mod', $m);
+			$mods[$m]['actions'] = nx_action_link('update', 'mod', $m, false, 'admin/config/nx/core/update');
 		} else $mods[$m]['actions'] = '';
 	}
 	$form ['mods'] = array(

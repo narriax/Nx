@@ -20,10 +20,10 @@ function nx_get_mod_setup_timestamps ($module_name) {
 				if (!is_file($setupfolder.'/'.$f.'/'.$sf)) continue;
 				$setup_files[$module_name][$f.'/'.$sf] = filemtime($setupfolder.'/'.$f.'/'.$sf);
 			}
-		}
-		$setup_files[$module_name][$f] = filemtime($setupfolder.'/'.$f);
+		} else $setup_files[$module_name][$f] = filemtime($setupfolder.'/'.$f);
 	}
 	nx_var_set('mod_setup_files', $setup_files);
+	return $setup_files[$module_name];
 }
 
 
@@ -48,7 +48,7 @@ function nx_all_mods_installed_version ($force_refresh = false) {
 	if ($force_refresh) $mod_versions = array();
 	if (!empty($mod_versions)) return $mod_versions;
 	
-	$q = db_select ('nx', 'nx') -> fields ('nx', array('module', 'date_modified')) -> condition('nx.table_name', '%_vno', 'LIKE');
+	$q = db_select ('nx', 'nx') -> fields ('nx', array('module', 'date_modified')) -> condition('nx.item', '%_vno', 'LIKE');
 	$mod_versions = $q -> execute() -> fetchAllKeyed(0,1);
 	nx_var_set('mod_cur_versions', $mod_versions);
 	return $mod_versions;
@@ -61,9 +61,10 @@ function nx_get_mods ($force_refresh = false) {
 	
 	$shortlist = array ();
 	foreach ($setup_files as $m => $files) {
+		if (empty($m)) continue;
 		$shortlist[$m] = array (
 			'mod' => $m, 
-			'lastdate' => max($files), 
+			'lastdate' => empty($files)?"-1":max($files), 
 			'curversion' => (array_key_exists($m, $mod_versions)?$mod_versions[$m]:'0')
 		);
 	}	
@@ -71,9 +72,68 @@ function nx_get_mods ($force_refresh = false) {
 }
 
 
-function nx_mod_setup__smart_update ($mod_name) {
+function nx_mod_setup__smart_update_status ($mod_name) {
 	dvm("TODO: update $mod_name tables by comparing file dates to nx table values");	
-	//nx_mod_setup__update_tables();
+	$file_timestamps = nx_get_mod_setup_timestamps ($mod_name);
+	
+	$and = db_and () -> condition ('nx.module', $mod_name) -> condition ('nx.item', '%_vno', 'NOT LIKE');
+	$q = db_select ('nx', 'nx') 
+		-> fields ('nx', array()) 
+		-> condition ($and);
+	
+	$system_timestamps = array();
+	if ($results = $q -> execute() -> fetchAll()) {
+		foreach ($results as $r) {
+			if ($r->item == $mod_name.'_vno') continue;
+			$system_timestamps[$r->item] = $r->date_modified;
+		}
+	}
+	$all = array_merge($system_timestamps, $file_timestamps);
+	$all = array_keys($all);
+	asort($all);
+	
+	$all_tables = array ();
+	$all_scripts = array ();
+	$all_status = array();
+	foreach ($all as $item) {
+		if (strlen($item) > 4 && substr($item,-4) === '.sql') {
+			$all_tables[$item] = str_replace('.sql', '', str_replace('tables/', '', $item));
+		} else if (strlen($item) > 4 && substr($item,-4) === '.inc') {
+			$all_scripts[$item] = array (str_replace('.inc', '', $item));
+		} else {
+			dvm ("smart_update: unknown item type [".$item."]");
+		}
+		
+		$sys = -1;
+		if (array_key_exists($item, $system_timestamps)) {
+			$sys = $system_timestamps[$item];
+		}
+		
+		$ava = -1;
+		if (array_key_exists($item, $file_timestamps)) {
+			$ava = $file_timestamps[$item];
+		}		
+		
+		if ($ava < 0 && $sys >= 0) {
+			$all_status[$item] = 'delete';
+		} else if ($sys < 0) {
+			$all_status[$item] = 'new';
+		} else if ($sys < date('Y-m-d H:i:s', $ava)) {
+			$all_status[$item] = 'update';
+		} else {
+			$all_status[$item] = 'OK';
+		}		
+		
+	}
+	
+	return array(
+		'system' => $system_timestamps,
+		'available' => $file_timestamps,
+		'all_tables' => $all_tables,
+		'all_scripts' => $all_scripts,
+		'status' => $all_status,
+	);
+	
 }
 
 
@@ -97,12 +157,13 @@ function nx_mod_setup ($module_name, $module_setup_dir) {
 	
 	// create tables
 	if (file_exists($module_setup_dir.'/tables')) {
-		nx_mod_setup__update_tables ($module_setup_dir.'/tables');
+		nx_mod_setup__update_tables ($module_name, $module_setup_dir);
 	}
 	
 	variable_set ($module_name.'_setup', 1);
 	// variable_set ($module_name.'_version', 1);		TODO
 }
+
 
 // create / update user roles
 function nx_mod_setup__update_roles ($update_roles) {
@@ -139,14 +200,15 @@ function nx_mod_setup__update_roles ($update_roles) {
 
 
 // automatically import tables from sql dumps
-function nx_mod_setup__update_tables ($sql_dir, $sql_files = array(), $directives = array ('CREATE TABLE', 'ALTER TABLE', 'INSERT INTO')) {
+function nx_mod_setup__update_tables ($module_name, $module_setup_dir, $sql_files = array(), $directives = array ('CREATE TABLE', 'ALTER TABLE', 'INSERT INTO')) {
+	
+	$sql_dir = $module_setup_dir.'/tables';
 	if (empty($sql_files)) $sql_files = scandir ($sql_dir);
-	dpm($sql_files);
 	
-	
+
 	// apply directives in this order
 	foreach ($directives as $marker) {
-		foreach ($sql_files as $sql) {
+		foreach ($sql_files as $sql) {		
 			if (strlen($sql)<5 || substr($sql,-4) !== '.sql') continue;
 			$raw = file_get_contents($sql_dir.'/'.$sql);	
 			while (strpos($raw,$marker) !== false) {
@@ -158,5 +220,50 @@ function nx_mod_setup__update_tables ($sql_dir, $sql_files = array(), $directive
 			}
 		}
 	}
+	
+	
+	// record what we did in DB
+	$latest = 0;
+	foreach ($sql_files as $sql) {
+		if (strlen($sql)<5 || substr($sql,-4) !== '.sql') continue;
+		
+		$file_date = filemtime($sql_dir.'/'.$sql);
+		if ($file_date > $latest) $latest = $file_date;
+		$file_date = date('Y-m-d H:i:s', $file_date);
+		$item = 'tables/'.$sql;
+		$table = str_replace('.sql', '', $sql);	
+		$cols = serialize(nx_get_db_columns($table));
+		
+		$current = db_query("SELECT * FROM nx WHERE ((module=:modname) AND (item=:item) ) LIMIT 1", array (':modname' => $module_name, ':item' => $item))->fetch();
+
+		if (!$current) {
+			db_query("INSERT INTO {nx} (module, item, date_modified, cols) VALUES (:modname, :item, :date, :cols)",
+				array (':modname' => $module_name, ':item' => $item, ':date' => $file_date, ':cols' => $cols));				
+		} else {
+			$current->cols = unserialize($current->cols);
+			//dpm($current, 'current');			
+			dvm('TODO: handle updates');
+		}
+	}
+	
+	$current = db_query("SELECT * FROM nx WHERE ((module=:modname) AND (item=:item) ) LIMIT 1", array (':modname' => $module_name, ':item' => $module_name.'_vno'))->fetch();
+	if (!$current) {
+		db_query("INSERT INTO {nx} (module, item, date_modified) VALUES (:modname, :item, :date)",
+			array (':modname' => $module_name, ':item' => $module_name.'_vno', ':date' => date('Y-m-d H:i:s', $latest)));
+	} else {
+		db_query("UPDATE {nx}  SET date_modified = :date WHERE (module = :modname AND item = :item)",
+			array (':modname' => $module_name, ':item' => $module_name.'_vno', ':date' => date('Y-m-d H:i:s', $latest)));		
+	}
+	
+}
+
+
+function nx_get_db_columns ($table) {
+	$schema = db_query ("select COLUMN_NAME, COLUMN_TYPE from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='".$table."'")->fetchAll();
+	$cols = array();
+	foreach ($schema as $s) {
+		$cols[$s->COLUMN_NAME] = $s->COLUMN_TYPE;
+	}
+	return $cols;
 }
 
