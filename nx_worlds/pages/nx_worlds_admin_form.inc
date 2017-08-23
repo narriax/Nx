@@ -3,10 +3,35 @@
 
 function nx_worlds_admin_form ($form, &$form_state) {
 	
+	// get action parameters
+	$action = nx_get_action();	
 	
 		//======================================		WORLDS
-	if (!module_exists('nx_worlds')) return $form;
-	module_load_include ('inc', 'nx_worlds', 'nxWorld');
+	module_load_include ('inc', 'nx_worlds', 'api/nxWorld');
+	
+	
+	module_load_include('inc', 'nx', 'api/nxTreeTable');
+	$tree = new nxTreeTable();
+	
+	$tree->AddCategory('universe');
+	$tree->SetCategoryHeaders('universe', array('_' => 'Universe', 'owner_tag' => 'Owner (Tag)', 'access' => 'Access'));
+	$tree->SetCategoryActions('universe', array('toggle', 'edit', 'delete'));
+	$tree->SetCategoryDB('universe', 'nx_worlds_universes');
+	
+	$tree->AddCategory('world', 'universe');
+	$tree->SetCategoryHeaders('world', array('_' => 'World', 'owner_tag' => 'Owner (Tag)', 'access' => 'Access'));
+	$tree->SetCategoryActions('world', array('toggle', 'edit', 'delete'));
+	$tree->SetCategoryDB('world', 'nx_worlds', 'id', 'universe_id');
+	
+	$tree->FetchItems();
+	
+	$form = array();
+	$form['abc'] = $tree->CreateTableselect('Worlds');
+	
+	dpm($tree);
+	
+	
+	
 	
 	// delete doomed worlds
 	if ($action && $action->action == 'delete' && $action->domain == 'world') {
@@ -57,5 +82,5 @@ function nx_worlds_admin_form ($form, &$form_state) {
 		'#suffix' => nx_action_link('add new', 'world'),
 	);	
 	
-	return $form();
+	return $form;
 }

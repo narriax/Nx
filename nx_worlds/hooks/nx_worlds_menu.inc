@@ -6,7 +6,7 @@ function nx_worlds_menu () {
    
   // add a page for nx core settings
   $items['admin/config/nx/worlds'] = array(
-    'title' => 'NX framework',
+    'title' => 'NX Worlds',
     'description' => 'Configure NX Worlds',
     'page callback' => 'drupal_get_form',
     'page arguments' => array ('nx_worlds_admin_form'),

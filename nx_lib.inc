@@ -76,3 +76,25 @@ function nx_db_limit_access (&$q, $tablealias) {
 }
 
 
+function nx_db_get_cols ($tables = array()) {
+	$q = db_select ('nx', 'nx') 
+	   -> fields ('nx', array('item', 'cols'));
+	if (empty($tables)) {
+		$q -> isNotNull ('nx.cols');
+	} else {
+		for ($i=0; $i < count($tables); $i++) $tables[$i] = 'tables/'.$tables[$i].'.sql';
+		$and = db_and() -> condition ('nx.item', $tables, 'IN') -> isNotNull ('nx.cols');
+		$q -> condition ($and);
+	}
+	if (!$results = $q->execute()->fetchAll()) {
+		return array();
+	} 
+	
+	$allcols = array ();
+	foreach ($results as $r) {
+		$t = str_replace('.sql', '', str_replace('tables/', '', $r->item));
+		$allcols[$t] = unserialize($r->cols);
+	}
+	return $allcols;
+}
+

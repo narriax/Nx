@@ -9,24 +9,7 @@ function nx_admin_form ($form, &$form_state) {
 	$action = nx_get_action();
 
 	
-	
-	/*
-	module_load_include('inc', 'nx', 'api/nxTreeTable');
-	$tree = new nxTreeTable();
-	
-	$tree->AddCategory('universe');
-	$tree->SetCategoryHeaders('universe', array('_' => 'Universe', 'owner_tag' => 'Owner (Tag)', 'access' => 'Access'));
-	$tree->SetCategoryActions('universe', array('toggle', 'edit', 'delete'));
-	$tree->SetCategoryDB('universe', 'nx_worlds_universes');
-	
-	$tree->AddCategory('world', 'universe');
-	$tree->SetCategoryHeaders('world', array('_' => 'World', 'owner_tag' => 'Owner (Tag)', 'access' => 'Access'));
-	$tree->SetCategoryActions('world', array('toggle', 'edit', 'delete'));
-	$tree->SetCategoryDB('world', 'nx_worlds', 'universe_id');
-	
-	$tree->FetchItems();
-	dpm($tree);
-	*/
+
 	
 	$form = array();
 		
@@ -41,7 +24,7 @@ function nx_admin_form ($form, &$form_state) {
 		if ($mods[$m]['lastdate'] > -1) {
 			$mods[$m]['lastdate'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [H:i:s]', $mods[$m]['lastdate'])));	
 			if ($mods[$m]['curversion'] == 0) $mods[$m]['curversion'] = '<i>- not installed -</i>';
-			else $mods[$m]['curversion'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>', date ('Y-m-d [H:i:s]', $mods[$m]['curversion'])));
+			else $mods[$m]['curversion'] = str_replace('[', '<font color=gray>', str_replace(']', '</font>',  $mods[$m]['curversion'])); //date ('Y-m-d [H:i:s]', $mods[$m]['curversion'])));
 		} else {
 			$mods[$m]['lastdate'] = '<font color=silver><i>- no files -</i></font>';
 			$mods[$m]['curversion'] = '<font color=silver><i>- no files -</i></font>';
