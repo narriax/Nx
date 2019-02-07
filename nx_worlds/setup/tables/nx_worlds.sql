@@ -46,8 +46,9 @@ CREATE TABLE IF NOT EXISTS `nx_worlds` (
 
 INSERT INTO `nx_worlds` (`id`, `name`, `universe_id`, `owner_tag`, `accessid`, `date_created`, `date_modified`, `desc`) VALUES
 (1, 'Earth', 1, NULL, '', '2017-06-30 19:50:24', '2017-06-30 19:50:24', ''),
-(2, 'Forgotten Realms', 2, NULL, '', '2017-06-30 19:52:02', '2017-06-30 19:52:02', ''),
-(3, 'Azeroth', 3, NULL, '', '2017-06-30 19:52:48', '2017-06-30 19:52:48', '');
+(2, 'DnD', 2, NULL, '', '2017-06-30 19:52:02', '2017-06-30 19:52:02', ''),
+(3, 'Warcraft', 2, NULL, '', '2017-06-30 19:52:48', '2017-06-30 19:52:48', ''),
+(4, 'Lorein', 3, NULL, '', '2017-06-30 19:52:48', '2017-06-30 19:52:48', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

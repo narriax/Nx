@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS `nx_worlds_universes` (
 
 INSERT INTO `nx_worlds_universes` (`id`, `name`, `owner_tag`, `enabled`, `accessid`, `date_created`, `date_modified`, `desc`) VALUES
 (1, 'reality', NULL, 1, '', '2017-06-30 19:47:13', '2017-06-30 19:47:13', ''),
-(2, 'DnD', NULL, 1, '', '2017-06-30 19:48:53', '2017-06-30 19:48:53', 'Dungeons and Dragons'),
-(3, 'Warcraft', NULL, 1, '', '2017-06-30 19:49:18', '2017-06-30 19:49:18', '');
+(2, 'gaming', NULL, 1, '', '2017-06-30 19:49:18', '2017-06-30 19:49:18', ''),
+(3, 'creative', NULL, 1, '', '2017-06-30 19:48:53', '2017-06-30 19:48:53', '');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

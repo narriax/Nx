@@ -3,9 +3,10 @@
 function nx_chars_list () {
 	
 	$world_id = nx_cur_world ();
+	dvm($world_id);
+	
 	
 	module_load_include ('inc', 'nx_chars', 'api/nxChar');
-	
 	$char_list = nxChar::get_chars($world_id);
 	//dpm($char_list);
 	

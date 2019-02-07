@@ -7,7 +7,7 @@ class nxWorld {
 	public $owner_tag = "";
 	public $access_level = 99;
 	
-	public function nxWorld ($world_id = -1, $record = null) {	
+	public function __construct  ($world_id = -1, $record = null) {	
 		$this->universe = new stdClass();
 		$this->universe->id = -1;
 		$this->universe->name = "";
@@ -52,7 +52,8 @@ class nxWorld {
 	}
 	
 	// =================================================================
-	static function get_worlds () {
+	
+	static function get_worlds ($index_by_world = true) {
 		$q = db_select ('nx_worlds', 'w');
 		$q -> leftJoin ('nx_worlds_universes', 'wu', 'wu.id=w.universe_id');
 		$q -> fields ('w', array())
@@ -60,8 +61,14 @@ class nxWorld {
 		   
 		$list = array();
 		if (!$rows = $q -> execute()) return $list;
+		
 		foreach ($rows as $r) {
-			$list[$r->id] = new nxWorld(-1, $r);
+			if ($index_by_world) {
+				$list[$r->id] = new nxWorld(-1, $r);
+			} else {
+				if (!array_key_exists($r->universe_id, $list)) $list[$r->universe_id] = array ('name' => $r->universe_name, 'worlds' => array());
+				$list[$r->universe_id]['worlds'][$r->id] = new nxWorld(-1, $r);
+			}
 		}
 		return $list;
 	}

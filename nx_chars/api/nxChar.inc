@@ -9,7 +9,7 @@ class nxChar {
 	public $access_level = 99;
 	
 	
-	public function nxChar ($record = null) {		
+	public function __construct  ($record = null) {		
 		if ($record) {
 			if (isset($record->id)) $this->id = $record->id;
 			if (isset($record->alias)) $this->alias = $record->alias;
@@ -17,7 +17,7 @@ class nxChar {
 			if (isset($record->access_level)) $this->access_level = $record->access_level;		
 			
 			if (isset($record->world_id)) {
-				module_load_include('inc', 'nx', 'api/nxWorld');
+				module_load_include('inc', 'nx_worlds', 'api/nxWorld');
 				$this->world = nxWorld::get_world_by_id($record->world_id);
 			}
 		}
