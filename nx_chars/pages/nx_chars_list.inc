@@ -3,7 +3,10 @@
 function nx_chars_list () {
 	
 	$world_id = nx_cur_world ();
-	dvm($world_id);
+	if ($world_id < 0) {
+		drupal_goto('nx_worlds');
+		return '';
+	}
 	
 	
 	module_load_include ('inc', 'nx_chars', 'api/nxChar');
