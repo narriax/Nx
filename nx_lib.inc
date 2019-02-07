@@ -63,15 +63,36 @@ function nx_get_access_levels () {
 
 
 function nx_db_limit_access (&$q, $tablealias) {
-	$access_levels = nx_get_access_levels();
-	//dpm($access_levels);
+	if (empty($tablealias)) return $q;
 	
 	module_load_include('inc', 'nx', 'api/nxUser');
-	$usr = nxUser::get_current_user();
-	//dpm($usr);
+	$usr = nxUser::get_cur_user();
+	if (in_array('god', $usr->roles)) return $q;
 	
-	dvm('TODO: nx_db_limit_access');
-	
+	$and = db_and();
+	foreach ($tablealias as $ta => $table) {
+		$q -> leftJoin ('nx_access', 'acs_'.$ta, 'acs_'.$ta.'.accessid='.$ta.'.accessid');
+					
+		$or = db_or()
+		    -> isNull ($ta.'.owner_tag')	// shared
+			-> isNull ($ta.'.accessid')		// shared
+		    -> condition ($ta.'.owner_tag', $usr->tag)		// owned by this user
+			-> condition ('acs_'.$ta.'.alid', 0);			// public
+			
+		$whites = db_and ()
+			-> isNotNull ('acs_'.$ta.'.whiteusers')
+			-> condition ('acs_'.$ta.'.whiteusers', '%['.$usr->tag.']%', 'LIKE');
+		$or->condition($whites);
+
+		$blacks = db_or ()
+			-> isNull ('acs_'.$ta.'.blackusers')
+			-> condition ('acs_'.$ta.'.blackusers', '%['.$usr->tag.']%', 'NOT LIKE');
+		
+		$and->condition($or);
+		$and->condition($blacks);
+		// TODO: same domain and groups
+	}
+	$q -> condition($and);
 	return $q;
 }
 

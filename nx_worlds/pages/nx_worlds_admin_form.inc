@@ -69,7 +69,7 @@ function nx_worlds_admin_form ($form, &$form_state) {
 	// add ui to to create new world
 	if ($action && $action->action == 'addnew' && $action->domain == 'world') {
 		module_load_include ('inc', 'nx', 'api/nxUser');
-		if ($me = nxUser::get_current_user()) {		
+		if ($me = nxUser::get_cur_user()) {		
 			$world_options['new'] = nx_admin_form_world_input_line ($universes, 'new', '', $me->tag);
 		}
 	}

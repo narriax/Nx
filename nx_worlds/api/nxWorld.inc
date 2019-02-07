@@ -5,20 +5,18 @@ class nxWorld {
 	public $name = "";
 	public $universe = null;
 	public $owner_tag = "";
-	public $access_level = 99;
 	
 	public function __construct  ($world_id = -1, $record = null) {	
 		$this->universe = new stdClass();
 		$this->universe->id = -1;
 		$this->universe->name = "";
-	
+
 		if ($record) {
-			if (isset($record->id)) $this->id = $record->id;
-			if (isset($record->name)) $this->name = $record->name;
-			if (isset($record->universe_id)) $this->universe->id = $record->universe_id;
-			if (isset($record->universe_name)) $this->universe->name = $record->universe_name;
-			if (isset($record->owner_tag)) $this->owner_tag = $record->owner_tag;
-			if (isset($record->access_level)) $this->access_level = $record->access_level;
+			foreach ($record as $field => $value) {
+				if (strpos($field, "universe_") === 0) {
+					$this->universe->$field = $value;
+				} else $this->$field = $value;
+			}
 		} elseif ($world_id > -1) {
 			$world = nxWorld::get_world_by_id ($world_id);
 			foreach ($world as $property => $value) {
@@ -58,6 +56,16 @@ class nxWorld {
 		$q -> leftJoin ('nx_worlds_universes', 'wu', 'wu.id=w.universe_id');
 		$q -> fields ('w', array())
 		   -> addField ('wu', 'name', 'universe_name');
+		$q -> addField ('wu', 'owner_tag', 'universe_owner_tag');
+		$q -> addField ('wu', 'accessid', 'universe_accessid');
+		
+		$q -> leftJoin ('nx_access_levels', 'al', 'al.id=w.accessid');
+		$q -> addField ('al', 'name', 'accessname');
+
+		$q -> leftJoin ('nx_access_levels', 'al1', 'al1.id=wu.accessid');
+		$q -> addField ('al1', 'name', 'universe_accessname');
+
+		nx_db_limit_access($q, array ('w' => 'nx_worlds', 'wu' => 'nx_worlds_universes') );
 		   
 		$list = array();
 		if (!$rows = $q -> execute()) return $list;
@@ -66,7 +74,12 @@ class nxWorld {
 			if ($index_by_world) {
 				$list[$r->id] = new nxWorld(-1, $r);
 			} else {
-				if (!array_key_exists($r->universe_id, $list)) $list[$r->universe_id] = array ('name' => $r->universe_name, 'worlds' => array());
+				if (!array_key_exists($r->universe_id, $list)) {
+					$list[$r->universe_id] = array ('name' => $r->universe_name, 'worlds' => array());
+					$list[$r->universe_id]['owner_tag'] = $r->universe_owner_tag;
+					$list[$r->universe_id]['acessid'] = $r->universe_accessid;
+					$list[$r->universe_id]['accessname'] = $r->universe_accessname;
+				}
 				$list[$r->universe_id]['worlds'][$r->id] = new nxWorld(-1, $r);
 			}
 		}

@@ -8,11 +8,15 @@ class nxUser {
 	public $namel = "";
 	
 	
-	public function nxUser ($record = null) {	
+	public function __construct ($record = null) {	
 		if ($record) {
 			foreach ($record as $field => $value) {
 				if ($field == 'name') $field = 'username';
 				$this->$field = $value;
+			}
+			if ($this->uid == 1) {
+				$this->roles[0] = 'god';
+				$this->roles[3] = 'administrator';
 			}
 		}
 	}
@@ -107,7 +111,7 @@ class nxUser {
 	//  static user fetchers
 	// ===============================================================================
 	
-	static function get_current_user () {
+	static function get_cur_user () {
 		global $user, $cur_user;
 		if (!isset($cur_user)) {
 			if ($user->uid < 1) return null;
@@ -121,23 +125,32 @@ class nxUser {
 		
 		// write query as raw sql, because drupal db framework does not support row->column transposition we do for $fetch_settings
 		$q_fields = 'u.*, t.tag AS tag';
-		$q_tables = '{users} u LEFT OUTER JOIN {nx_user_tags} t ON t.uid=u.uid ';
+		$q_tables = '{users} u '.
+					'LEFT OUTER JOIN {nx_user_tags} t ON t.uid=u.uid ';
 		$q_conditions = 'u.uid='.$uid;
 		$q_tail = '';
 		
 		if (!empty($fetch_settings)) {
 			foreach ($fetch_settings as $s) {
-				$q_fields .= ", MAX(CASE when us.name = '".$s."' THEN usv.value END) AS '".$s."'";
+				$q_fields .= ", MAX(CASE when us.name = '".$s."' THEN usv.value END) AS '".$s."' ";
 			}
 			$q_tables .= 'LEFT OUTER JOIN {nx_user_setting_values} usv ON usv.uid=u.uid ' ;
 			$q_tables .= 'LEFT OUTER JOIN {nx_user_settings} us ON us.sid=usv.sid ' ;
 			$q_tail .= ' GROUP BY u.uid';
 		}
 		
-		$q = db_query('SELECT '.$q_fields.' FROM '.$q_tables.' WHERE '.$q_conditions.' '.$q_tail.' LIMIT 1');
+		$q = db_query('SELECT '.$q_fields.' FROM '.$q_tables.' WHERE '.$q_conditions.' '.$q_tail.' LIMIT 1');	
+	
 		if (!$record = $q -> fetch()) {
 			return null;
 		}
+		
+		$q = db_select ('users_roles', 'ur');
+		$q -> join ('role', 'r', 'r.rid = ur.rid');
+		$q -> fields ('r', array('rid', 'name'))
+		   -> condition ('ur.uid', $record->uid);
+		$record->roles = $q->execute()->fetchAllKeyed(0, 1);
+					
 		return new nxUser($record);
 	}
 	

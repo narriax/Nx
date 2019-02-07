@@ -29,6 +29,8 @@ class nxChar {
 			-> fields ('c', array());
 		if ($world_id > -1) $q -> condition ('c.world_id', $world_id);
 		
+		nx_db_limit_access($q, array ('c' => 'nx_chars') );
+		
 		$list = array();
 		if (!$rows = $q -> execute()) return $list;
 		foreach ($rows as $r) {
