@@ -8,14 +8,12 @@ function nx_worlds_page () {
 	
 	module_load_include ('inc', 'nx_worlds', 'api/nxWorld');
 	$world_tree = nxWorld::get_worlds(false, true);
-	dpm($world_tree);
+//	dpm($world_tree);
 	
 	$t .= "<table><tr><th>Universe</th><th>World</th><th>Description</th></tr>";
 	foreach ($world_tree as $unid => $undta) {	
 		$firstrow = true;
 		foreach ($undta['worlds'] as $wid => $world) {
-			
-			
 			
 			if ($world_id == $wid) $itemclass = "selected";
 			else $itemclass = "";

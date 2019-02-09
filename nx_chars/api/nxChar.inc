@@ -6,15 +6,16 @@ class nxChar {
 	public $alias = "";
 	public $world = null;
 	public $owner_tag = "";
-	public $access_level = 99;
 	
 	
 	public function __construct  ($record = null) {		
 		if ($record) {
-			if (isset($record->id)) $this->id = $record->id;
-			if (isset($record->alias)) $this->alias = $record->alias;
-			if (isset($record->owner_tag)) $this->owner_tag = $record->owner_tag;
-			if (isset($record->access_level)) $this->access_level = $record->access_level;		
+			foreach ($record as $field => $value) {
+				if (strpos($field, "universe_") === 0) {
+					$field = substr($field, strlen("universe_"));
+					$this->universe->$field = $value;
+				} else $this->$field = $value;
+			}
 			
 			if (isset($record->world_id)) {
 				module_load_include('inc', 'nx_worlds', 'api/nxWorld');

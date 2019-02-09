@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 07, 2019 at 06:08 PM
+-- Generation Time: Feb 09, 2019 at 10:25 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.14
 
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `nx_worlds` (
 INSERT INTO `nx_worlds` (`id`, `name`, `universe_id`, `owner_tag`, `accessid`, `date_created`, `date_modified`, `desc`) VALUES
 (1, 'Earth', 1, NULL, NULL, '2017-06-30 23:50:24', '2017-06-30 23:50:24', ''),
 (2, 'DnD', 2, NULL, NULL, '2017-06-30 23:52:02', '2017-06-30 23:52:02', ''),
-(3, 'Warcraft', 2, NULL, NULL, '2017-06-30 23:52:48', '2017-06-30 23:52:48', ''),
+(3, 'Warcraft', 2, NULL, NULL, '2017-06-30 23:52:48', '2017-06-30 23:52:48', 'wow!'),
 (4, 'Lorein', 3, 'kirenno', 'private', '2019-02-07 00:18:23', '2019-02-07 00:18:23', '');
 COMMIT;
 

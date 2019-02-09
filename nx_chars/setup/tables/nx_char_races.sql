@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 09, 2019 at 10:23 PM
+-- Generation Time: Feb 09, 2019 at 10:24 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.14
 
@@ -25,30 +25,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `nx_chars`
+-- Table structure for table `nx_char_races`
 --
 
-DROP TABLE IF EXISTS `nx_chars`;
-CREATE TABLE IF NOT EXISTS `nx_chars` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `alias` varchar(16) NOT NULL,
-  `world_id` int(4) NOT NULL,
-  `owner_tag` varchar(16) DEFAULT NULL,
-  `accessid` varchar(16) DEFAULT NULL COMMENT 'access id hash',
+DROP TABLE IF EXISTS `nx_char_races`;
+CREATE TABLE IF NOT EXISTS `nx_char_races` (
+  `id` int(8) NOT NULL AUTO_INCREMENT,
+  `name` varchar(16) NOT NULL,
+  `type` varchar(16) NOT NULL,
+  `wid` int(4) DEFAULT NULL COMMENT 'world id',
+  `parent_rid` int(8) DEFAULT NULL COMMENT 'parent id (same table)',
+  `description` varchar(256) DEFAULT NULL,
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `alias` (`alias`),
-  KEY `owner_uid` (`owner_tag`),
-  KEY `world_id` (`world_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf32;
 
 --
--- Dumping data for table `nx_chars`
+-- Dumping data for table `nx_char_races`
 --
 
-INSERT INTO `nx_chars` (`id`, `alias`, `world_id`, `owner_tag`, `accessid`, `date_created`, `date_modified`) VALUES
-(1, 'Arderian', 3, 'narriax', 'public_view', '2017-07-01 00:01:44', '2017-07-01 00:01:44');
+INSERT INTO `nx_char_races` (`id`, `name`, `type`, `wid`, `parent_rid`, `description`, `date_created`, `date_modified`) VALUES
+(1, 'human', 'species', NULL, NULL, 'Homo sapiens', '2019-02-08 19:43:15', '2019-02-08 19:43:15'),
+(2, 'elf', 'species', NULL, NULL, 'Homo arcanus', '2019-02-08 19:47:08', '2019-02-08 19:47:08');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

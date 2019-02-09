@@ -11,15 +11,15 @@ function nx_chars_list () {
 	
 	module_load_include ('inc', 'nx_chars', 'api/nxChar');
 	$char_list = nxChar::get_chars($world_id);
-	//dpm($char_list);
+	dpm($char_list);
 	
 	
-	$t = '<table><tr><th>Universe</th><th>World</th><th>Alias</th></tr>';
+	$t = '<table><tr><th>World</th><th>Alias</th><th>Owner</th></tr>';
 	foreach ($char_list as $cid => $char) {
 		$t .= '<tr>';
-		$t .= '<td>'.$char->world->universe->name.'</td>';
-		$t .= '<td>'.$char->world->name.'</td>';
+		$t .= '<td>'.ucfirst($char->world->universe->name).': '.ucfirst($char->world->name).'</td>';
 		$t .= '<td>'.$char->alias.'</td>';
+		$t .= '<td>'.$char->owner_tag.'</td>';
 		$t .= '</tr>';
 	}
 	$t .= '</table>';

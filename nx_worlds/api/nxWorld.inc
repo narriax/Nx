@@ -14,6 +14,7 @@ class nxWorld {
 		if ($record) {
 			foreach ($record as $field => $value) {
 				if (strpos($field, "universe_") === 0) {
+					$field = substr($field, strlen("universe_"));
 					$this->universe->$field = $value;
 				} else $this->$field = $value;
 			}

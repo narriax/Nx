@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 07, 2019 at 06:08 PM
+-- Generation Time: Feb 09, 2019 at 10:25 PM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.14
 
@@ -35,9 +35,9 @@ CREATE TABLE IF NOT EXISTS `nx_worlds_universes` (
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
   `owner_tag` varchar(16) DEFAULT NULL,
   `accessid` varchar(16) DEFAULT NULL COMMENT 'access id hash',
+  `desc` text NOT NULL,
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `desc` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `owner_uid` (`owner_tag`,`accessid`)
@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS `nx_worlds_universes` (
 -- Dumping data for table `nx_worlds_universes`
 --
 
-INSERT INTO `nx_worlds_universes` (`id`, `name`, `enabled`, `owner_tag`, `accessid`, `date_created`, `date_modified`, `desc`) VALUES
-(1, 'reality', 1, NULL, NULL, '2017-06-30 23:47:13', '2017-06-30 23:47:13', ''),
-(2, 'gaming', 1, NULL, NULL, '2017-06-30 23:48:53', '2017-06-30 23:48:53', ''),
-(3, 'creative', 1, NULL, NULL, '2017-06-30 23:49:18', '2017-06-30 23:49:18', '');
+INSERT INTO `nx_worlds_universes` (`id`, `name`, `enabled`, `owner_tag`, `accessid`, `desc`, `date_created`, `date_modified`) VALUES
+(1, 'reality', 1, NULL, NULL, '', '2017-06-30 23:47:13', '2017-06-30 23:47:13'),
+(2, 'gaming', 1, NULL, NULL, '', '2017-06-30 23:48:53', '2017-06-30 23:48:53'),
+(3, 'creative', 1, NULL, NULL, '', '2017-06-30 23:49:18', '2017-06-30 23:49:18');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
