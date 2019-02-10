@@ -6,7 +6,10 @@ function nx_blocks_menubar_content () {
 	$tw = '';
 	
 	if (module_exists('nx_worlds')) {
-		if (array_key_exists('nx_world', $_GET)) nx_var_set ('world', $_GET['nx_world']);
+		if (array_key_exists('nx_world', $_GET) && $_GET['nx_world'] != nx_var('world')) {
+			nx_var_set ('world', $_GET['nx_world']);
+			drupal_goto(current_path());
+		}
 		
 		module_load_include ('inc', 'nx_worlds', 'api/nxWorld');
 		$world_tree = nxWorld::get_worlds(false);

@@ -12,6 +12,7 @@ class nxWorld {
 		$this->universe->name = "";
 
 		if ($record) {
+			//dpm($record, 'record='.$record->name);
 			foreach ($record as $field => $value) {
 				if (strpos($field, "universe_") === 0) {
 					$field = substr($field, strlen("universe_"));
@@ -60,11 +61,11 @@ class nxWorld {
 		$q -> addField ('wu', 'owner_tag', 'universe_owner_tag');
 		$q -> addField ('wu', 'accessid', 'universe_accessid');
 		
-		$q -> leftJoin ('nx_access_levels', 'al', 'al.id=w.accessid');
-		$q -> addField ('al', 'name', 'accessname');
+		$q -> leftJoin ('nx_access', 'a1', 'a1.accessid=w.accessid');
+		$q -> addField ('a1', 'name', 'accessname');
 
-		$q -> leftJoin ('nx_access_levels', 'al1', 'al1.id=wu.accessid');
-		$q -> addField ('al1', 'name', 'universe_accessname');
+		$q -> leftJoin ('nx_access', 'a2', 'a2.accessid=wu.accessid');
+		$q -> addField ('a2', 'name', 'universe_accessname');
 
 		nx_db_limit_access($q, array ('w' => 'nx_worlds', 'wu' => 'nx_worlds_universes') );
 		   

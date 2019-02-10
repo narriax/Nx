@@ -4,7 +4,8 @@ function nx_chars_list () {
 	
 	$world_id = nx_cur_world ();
 	if ($world_id < 0) {
-		drupal_goto('nx_worlds');
+		nx_var_set('bounce_setworld', current_path());
+		drupal_goto('worlds');
 		return '';
 	}
 	
@@ -14,12 +15,11 @@ function nx_chars_list () {
 	dpm($char_list);
 	
 	
-	$t = '<table><tr><th>World</th><th>Alias</th><th>Owner</th></tr>';
+	$t = '<table><tr><th>Owner</th><th>Alias</th></tr>';
 	foreach ($char_list as $cid => $char) {
 		$t .= '<tr>';
-		$t .= '<td>'.ucfirst($char->world->universe->name).': '.ucfirst($char->world->name).'</td>';
+		$t .= '<td>'.$char->owner_tag.($char->accessname != null?' ('.$char->accessname.')':'').'</td>';
 		$t .= '<td>'.$char->alias.'</td>';
-		$t .= '<td>'.$char->owner_tag.'</td>';
 		$t .= '</tr>';
 	}
 	$t .= '</table>';

@@ -18,13 +18,13 @@ function nx_worlds_menu () {
     'file path' => drupal_get_path('module', 'nx_worlds').'/pages',	
   ); 
   
-  $items['nx_worlds'] = array (
+  $items['worlds'] = array (
 	'title' => 'Worlds',
 	'description' => 'List/select worlds',
-	'page callback' => 'nx_worlds_page',
+	'page callback' => 'nx_worlds_list',
 	'access callback' => true,
 	'type' => MENU_CALLBACK,
-	'file' => 'nx_worlds_page.inc',
+	'file' => 'nx_worlds_list.inc',
     'file path' => drupal_get_path('module', 'nx_worlds').'/pages',		
   );
   

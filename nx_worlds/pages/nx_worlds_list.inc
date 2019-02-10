@@ -1,14 +1,21 @@
 <?php
 
-function nx_worlds_page () {
+function nx_worlds_list () {
 	$t = '';
 	
 	$world_id = nx_cur_world ();
-	if ($world_id < 0) $t .= '<div class="messages action">Please select a world to continue</div>';
+	if ($world_id < 0) {
+		$t .= '<div class="messages action">Please select a world to continue</div>';
+	} else {
+		$bounce = nx_var('bounce_setworld');
+		if (!empty($bounce)) {
+			nx_var_set('bounce_setworld', '');
+			drupal_goto($bounce);
+		}
+	}
 	
 	module_load_include ('inc', 'nx_worlds', 'api/nxWorld');
 	$world_tree = nxWorld::get_worlds(false, true);
-//	dpm($world_tree);
 	
 	$t .= "<table><tr><th>Universe</th><th>World</th><th>Description</th></tr>";
 	foreach ($world_tree as $unid => $undta) {	

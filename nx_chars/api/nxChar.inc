@@ -29,6 +29,8 @@ class nxChar {
 		$q = db_select ('nx_chars', 'c')
 			-> fields ('c', array());
 		if ($world_id > -1) $q -> condition ('c.world_id', $world_id);
+		$q -> leftJoin ('nx_access', 'a', 'a.accessid=c.accessid');
+		$q -> addField ('a', 'name', 'accessname');
 		
 		nx_db_limit_access($q, array ('c' => 'nx_chars') );
 		
