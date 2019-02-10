@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 10, 2019 at 01:22 AM
+-- Generation Time: Feb 10, 2019 at 05:21 AM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.14
 
@@ -48,16 +48,15 @@ CREATE TABLE IF NOT EXISTS `nx_char_properties` (
 --
 
 INSERT INTO `nx_char_properties` (`id`, `property_group`, `name`, `datatype`, `possible_values`, `count_limit`, `wid`, `description`, `date_created`, `date_modified`) VALUES
-(1, 'name', 'name-first', 'string', '', -1, NULL, 'first / given name', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(2, 'name', 'name-nick', 'string', '', -1, NULL, 'nick name or personal title', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(3, 'name', 'name-last', 'string', '', -1, NULL, 'last / family name', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(4, 'name', 'name-middle', 'string', '', -1, NULL, 'additional given name', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(5, 'name', 'name-patronymic', 'string', '', 1, NULL, 'patronymic name (middle name alternative in some cultures)', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(10, 'name', 'title', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(6, 'name', 'name-matronymic', 'string', '', 1, NULL, 'matronymic name (middle name alternative in some cultures)', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(9, 'name', 'clan name', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(7, 'name', 'prefix', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(8, 'name', 'suffix', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(1, 'name', 'First name', 'string', '', -1, NULL, 'first / given name', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(2, 'name', 'Nickname', 'string', '', -1, NULL, 'nick name or personal title', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(3, 'name', 'Last name', 'string', '', -1, NULL, 'last / family name', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(5, 'name', 'Patronymic', 'string', '', 1, NULL, 'patronymic name (middle name alternative in some cultures)', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(10, 'name', 'Title', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(6, 'name', 'Matronymic', 'string', '', 1, NULL, 'matronymic name (middle name alternative in some cultures)', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(9, 'name', 'Clan', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(7, 'name', 'Prefix', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
+(8, 'name', 'Suffix', 'string', '', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
 (12, 'demographics', 'race', 'string', '@nx_char_races.id', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
 (13, 'demographics', 'dob', 'string', '#YEAR', 1, NULL, 'date of birth', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
 (14, 'demographics', 'dod', 'string', '#YEAR', 1, NULL, 'date of death', '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
@@ -71,7 +70,7 @@ INSERT INTO `nx_char_properties` (`id`, `property_group`, `name`, `datatype`, `p
 (22, 'description', 'icon', 'string', '#ICON', 1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
 (23, 'description', 'eye_color', 'hex', '#COLOR', 2, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
 (24, 'description', 'hair_color', 'hex', '#COLOR', 2, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37'),
-(27, '', 'skill', 'string', '@nx_char_skills.id', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37');
+(27, 'stats', 'skill', 'string', '@nx_char_skills.id', -1, NULL, NULL, '2019-02-09 00:21:37', '2019-02-09 00:21:37');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
