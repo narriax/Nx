@@ -31,7 +31,7 @@ function nx_blocks_menubar_content () {
 		}
 		$tw .= "</ul>";
 
-		$tw = "<div><label>World:</label> <span>".$cur_world_name."</span></div>".$tw;
+		$tw = "<div><label><a href='worlds'>World</a>:</label> <span>".$cur_world_name."</span></div>".$tw;
 	}
 	
 	return "<ul><li class='worlds'>".$tw."</li></ul>";
