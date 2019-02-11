@@ -1,0 +1,12 @@
+<?php
+
+module_load_include('inc', 'nx', 'nx_lib_dirs');
+module_load_include('inc', 'nx', 'nx_lib_user_settings');
+
+
+nx_mod_initialize(__FILE__);
+
+
+
+
+

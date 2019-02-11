@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Feb 09, 2019 at 10:23 PM
+-- Generation Time: Feb 11, 2019 at 04:06 AM
 -- Server version: 5.7.24
 -- PHP Version: 7.2.14
 
@@ -32,7 +32,7 @@ DROP TABLE IF EXISTS `nx_chars`;
 CREATE TABLE IF NOT EXISTS `nx_chars` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `alias` varchar(16) NOT NULL,
-  `world_id` int(4) NOT NULL,
+  `wid` int(4) NOT NULL,
   `owner_tag` varchar(16) DEFAULT NULL,
   `accessid` varchar(16) DEFAULT NULL COMMENT 'access id hash',
   `date_created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -40,14 +40,14 @@ CREATE TABLE IF NOT EXISTS `nx_chars` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `alias` (`alias`),
   KEY `owner_uid` (`owner_tag`),
-  KEY `world_id` (`world_id`)
+  KEY `world_id` (`wid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `nx_chars`
 --
 
-INSERT INTO `nx_chars` (`id`, `alias`, `world_id`, `owner_tag`, `accessid`, `date_created`, `date_modified`) VALUES
+INSERT INTO `nx_chars` (`id`, `alias`, `wid`, `owner_tag`, `accessid`, `date_created`, `date_modified`) VALUES
 (1, 'Arderian', 3, 'narriax', 'public_view', '2017-07-01 00:01:44', '2017-07-01 00:01:44');
 COMMIT;
 
