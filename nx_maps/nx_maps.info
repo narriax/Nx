@@ -1,9 +1,0 @@
-name = NX Maps
-description = NX maps and places
-
-core = 7.x
-package = NX
-dependencies[] = NX:nx
-dependencies[] = NX:nx_worlds
-
-files[] = nx_maps.module

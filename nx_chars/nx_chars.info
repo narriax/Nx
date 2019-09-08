@@ -3,6 +3,6 @@ description = NX character framework
 
 core = 7.x
 package = NX
-dependencies[] = NX:nx_worlds
+dependencies[] = NX:nx
 
 files[] = nx_chars.module

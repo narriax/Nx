@@ -1,0 +1,7 @@
+package = NX
+name = NX Projects
+description = Allows indexing of projects from external DBs
+core = 7.x
+
+dependencies[] = NX:nx
+files[] = nx_projects.module

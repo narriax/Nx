@@ -2,7 +2,7 @@
 
 
 function nx_var ($name = "") {
-	if (empty($name)) return null;
+	if (empty($name) || !isset($_SESSION)) return null;
 	if (!array_key_exists('nx', $_SESSION)) return null;
 	if (!array_key_exists($name, $_SESSION['nx'])) return null;
 	return $_SESSION['nx'][$name];
@@ -62,12 +62,14 @@ function nx_get_access_levels () {
 }
 
 
-function nx_db_limit_access (&$q, $tablealias) {
+function nx_db_limit_access (&$q, $tablealias, $allowGod = true) {
 	if (empty($tablealias)) return $q;
 	
 	module_load_include('inc', 'nx', 'api/nxUser');
 	$usr = nxUser::get_cur_user();
-	if (in_array('god', $usr->roles)) return $q;
+	if ($usr == null) return;
+	
+	if (in_array('god', $usr->roles) && $allowGod) return $q;
 	
 	$and = db_and();
 	foreach ($tablealias as $ta => $table) {
