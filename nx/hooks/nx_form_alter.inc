@@ -219,7 +219,7 @@ function nx_form_alter__profile_fields (&$form, &$form_state, $existing_record =
 		'#suffix' => '</div>',			
 	);	
 	if (!user_access('administer site configuration')) {
-		$form['account']['name-group']['tag']['#attributes']['readonly'] = 'readonly';
+		//$form['account']['name-group']['tag']['#attributes']['readonly'] = 'readonly';
 		$form['account']['name-group']['tag']['#attributes']['class'][] = 'readonly';
 	}
 	
@@ -279,11 +279,18 @@ function nx_form_alter__profile_fields_validate ($form, $form_state) {
 			if ($require_fields) form_set_error ('tag', t('Last name is required.'));
 		} else form_set_error('lastname', t('Last name contains an illegal character.'));
     }	
-	
+
+	$form_state['values']['tag'] = trim($form_state['values']['tag']);
 	if ($require_fields && empty($form_state['values']['tag'])) {
 		form_set_error ('tag', t('Tag is required.'));
+	} else {
+		global $user;
+		$q = db_select('nx_user_tags', 'ut') -> fields ('ut', array('tag'))->condition('ut.uid', $user->uid, "<>");
+		$tags = $q -> execute() -> fetchAllKeyed(0,0);
+		if (array_key_exists($form_state['values']['tag'], $tags)) {
+			form_set_error ('tag', t('Tag is taken.'));
+			}
 	}
-
 }
 
 /*
