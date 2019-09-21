@@ -305,6 +305,7 @@ function nx_form_alter__profile_fields_submit ($form, $form_state) {
 	
 	$u->update_name ($form_state['values']['firstname'], $form_state['values']['lastname']);
 	$u->update_tag($form_state['values']['tag']);
+	nx_var_set('nx_tag', null);
 }
 
 

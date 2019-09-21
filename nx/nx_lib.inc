@@ -17,6 +17,19 @@ function nx_var_set ($name = "", $value = false) {
 	$_SESSION['nx'][$name] = $value;
 }
 
+function nx_tag() {
+	if (!$tag = nx_var('nx_tag')) {
+		$uid = '0';
+		global $user;
+		if (isset($user)) $uid = $user->uid;
+		$q = db_select ('nx_user_tags', 't') -> fields('t', array()) -> condition ('t.uid', $uid);
+		$tag = $q->execute() -> fetch()->tag;
+		if (!isset($tag)) $tag = '0';
+		nx_var_set('nx_tag', $tag);
+	}
+	return $tag;
+}
+
 
 function nx_action_link ($action, $domain='', $arg='', $warn=false, $url = '') {
 	$l = str_replace('_', '', str_replace(' ','',$action));
@@ -61,6 +74,16 @@ function nx_get_access_levels () {
 	return $access_levels;
 }
 
+function nx_get_access_items () {
+	if (!$access_items = nx_var('access_items')) {
+		$or = db_or() -> condition ('a.utag', 0) -> condition ('a.utag', nx_tag());
+		$q = db_select('nx_access', 'a') -> fields('a', array())->condition($or);
+		$access_items = $q->execute()->fetchAllAssoc('accessid');
+		nx_var_set('access_items', $access_items);
+	}
+	return $access_items;
+}
+
 
 function nx_db_limit_access (&$q, $tablealias, $allowGod = true) {
 	if (empty($tablealias)) return $q;
@@ -96,6 +119,23 @@ function nx_db_limit_access (&$q, $tablealias, $allowGod = true) {
 	}
 	$q -> condition($and);
 	return $q;
+}
+
+
+function nx_access_form_controls () {
+	$items = nx_get_access_items();
+	$item = array (
+		'#title' => 'Access Level',
+		'#type' => 'select',
+		'#options' => array(),
+		'#default_value' => 'private',
+	);
+	
+	foreach ($items as $i => $ii) {
+		$item['#options'][$i] = $ii->name;
+	}
+	
+	return $item;
 }
 
 
